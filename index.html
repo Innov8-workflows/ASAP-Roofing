@@ -107,6 +107,32 @@
   .tile:focus-visible{outline:3px solid #9dc0ff;outline-offset:2px}
   .qc-foot{text-align:center;margin-top:14px;font-size:.82rem;color:var(--grey)}
   .qc-foot b{color:var(--ink)}
+  /* Multi-step quote funnel */
+  .quiz-top{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .quiz-back{appearance:none;border:0;background:none;color:var(--blue);font-family:'Montserrat';font-weight:700;font-size:.8rem;cursor:pointer;padding:2px 0;white-space:nowrap}
+  .quiz-back[hidden]{display:none}
+  .quiz-prog{flex:1;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+  .quiz-prog-fill{display:block;height:100%;width:25%;background:var(--blue);border-radius:999px;transition:width .35s ease}
+  .quiz-count{font-size:.72rem;color:var(--grey);font-weight:700;white-space:nowrap}
+  .quiz-step{display:none}
+  .quiz-step.is-active{display:block;animation:quizIn .28s ease}
+  @keyframes quizIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+  .quiz-q{font-size:1.24rem;font-weight:800;color:var(--blue-dark);text-align:center}
+  .quiz-sub{text-align:center;color:var(--grey);margin:6px 0 16px;font-size:.92rem}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .opts-col{grid-template-columns:1fr}
+  .opt{appearance:none;border:1.5px solid var(--line);cursor:pointer;background:#fff;color:var(--ink);border-radius:12px;padding:15px 12px;text-align:center;font-family:'Montserrat';font-weight:700;font-size:.86rem;line-height:1.25;transition:transform .12s ease,background .12s ease,border-color .12s ease,color .12s ease}
+  .opt:hover{background:var(--blue);color:#fff;border-color:var(--blue);transform:translateY(-2px)}
+  .opt:focus-visible{outline:3px solid #9dc0ff;outline-offset:2px}
+  .quiz-name{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;font-size:1rem;font-family:'Open Sans',sans-serif;margin-bottom:12px}
+  .quiz-name:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,78,216,.16)}
+  .quiz-contact{display:grid;gap:10px}
+  .qc-btn{display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;border-radius:12px;padding:15px;font-family:'Montserrat';font-weight:800;font-size:.98rem;cursor:pointer;transition:transform .12s ease,filter .12s ease}
+  .qc-btn:hover{transform:translateY(-2px);filter:brightness(1.04)}
+  .qc-btn svg{width:22px;height:22px;flex:none;fill:#fff}
+  .qc-wa{background:#25D366;color:#fff}
+  .qc-sms{background:var(--blue);color:#fff}
+  .quiz-summary{margin:12px 0 0;font-size:.76rem;color:var(--grey);text-align:left;white-space:pre-line;background:var(--bg);border-radius:10px;padding:10px 12px;display:none}
 
   /* ===== Section scaffolding ===== */
   section.band{padding:56px 0}
@@ -176,6 +202,10 @@
   .btn:hover{background:var(--blue-dark);transform:translateY(-2px)}
   .btn.wa{background:#25D366;box-shadow:0 10px 24px rgba(37,211,102,.34)}
   .btn.wa:hover{background:#1da851}
+  .btn.sms{background:var(--blue)}
+  .btn.sms:hover{background:var(--blue-dark)}
+  .btn.ghost{background:transparent;border:2px solid rgba(255,255,255,.55);box-shadow:none}
+  .btn.ghost:hover{background:rgba(255,255,255,.12);border-color:#fff}
   .btn svg{width:20px;height:20px;fill:#fff}
   .btn:focus-visible{outline:3px solid #9dc0ff;outline-offset:3px}
 
@@ -278,21 +308,73 @@
         </video>
       </div>
       <div class="qc-body">
-        <h2>Get a Free Roofing Quote</h2>
-        <p class="lead">Tap the type of work you need</p>
-        <div class="tiles">
-          <button class="tile" data-job="Full Roof Replacement">
-            <svg viewBox="0 0 32 32"><path d="M3 15 16 5l13 10M6 13v13h20V13M13 26v-7h6v7"/></svg>Full Roof Replacement</button>
-          <button class="tile" data-job="Flat Roofing">
-            <svg viewBox="0 0 32 32"><path d="M4 11h24v4H4zM6 15v11h20V15M4 11l4-4h16l4 4"/></svg>Flat Roofing</button>
-          <button class="tile" data-job="Roof Repair">
-            <svg viewBox="0 0 32 32"><path d="M21 4l3 3-4 4-3-3zM18 7 6 19v7h7l12-12M5 27l3-1"/></svg>Roof Repair</button>
-          <button class="tile" data-job="Fascias, Soffits &amp; Gutters">
-            <svg viewBox="0 0 32 32"><path d="M3 13 16 5l13 8M5 13v3h22v-3M5 19h22v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/></svg>Fascias, Soffits &amp; Gutters</button>
-          <button class="tile" data-job="Gutter / Roof Cleaning">
-            <svg viewBox="0 0 32 32"><path d="M6 8h20l-2 9H8zM10 17v6M16 17v8M22 17v6"/></svg>Gutter / Roof Cleaning</button>
-          <button class="tile" data-job="Something Else">
-            <svg viewBox="0 0 32 32"><path d="M16 13a3 3 0 1 1 3 3c-1 .5-1 1.5-1 2.5M16 23v.5"/><circle cx="16" cy="16" r="13"/></svg>Other</button>
+        <div class="quiz" data-quiz>
+          <div class="quiz-top">
+            <button class="quiz-back" data-quiz-back type="button" hidden>&#8249; Back</button>
+            <span class="quiz-prog"><span class="quiz-prog-fill" data-quiz-fill></span></span>
+            <span class="quiz-count" data-quiz-count>Step 1 of 4</span>
+          </div>
+
+          <!-- Step 1: type of work -->
+          <div class="quiz-step is-active" data-step="1">
+            <h2 class="quiz-q">Get a Free Roofing Quote</h2>
+            <p class="quiz-sub">What type of work do you need?</p>
+            <div class="tiles">
+              <button class="tile" data-opt="job" data-val="Full Roof Replacement">
+                <svg viewBox="0 0 32 32"><path d="M3 15 16 5l13 10M6 13v13h20V13M13 26v-7h6v7"/></svg>Full Roof Replacement</button>
+              <button class="tile" data-opt="job" data-val="Flat Roofing">
+                <svg viewBox="0 0 32 32"><path d="M4 11h24v4H4zM6 15v11h20V15M4 11l4-4h16l4 4"/></svg>Flat Roofing</button>
+              <button class="tile" data-opt="job" data-val="Roof Repair">
+                <svg viewBox="0 0 32 32"><path d="M21 4l3 3-4 4-3-3zM18 7 6 19v7h7l12-12M5 27l3-1"/></svg>Roof Repair</button>
+              <button class="tile" data-opt="job" data-val="Fascias, Soffits &amp; Gutters">
+                <svg viewBox="0 0 32 32"><path d="M3 13 16 5l13 8M5 13v3h22v-3M5 19h22v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/></svg>Fascias, Soffits &amp; Gutters</button>
+              <button class="tile" data-opt="job" data-val="Gutter / Roof Cleaning">
+                <svg viewBox="0 0 32 32"><path d="M6 8h20l-2 9H8zM10 17v6M16 17v8M22 17v6"/></svg>Gutter / Roof Cleaning</button>
+              <button class="tile" data-opt="job" data-val="Other / Not sure">
+                <svg viewBox="0 0 32 32"><path d="M16 13a3 3 0 1 1 3 3c-1 .5-1 1.5-1 2.5M16 23v.5"/><circle cx="16" cy="16" r="13"/></svg>Other</button>
+            </div>
+          </div>
+
+          <!-- Step 2: property type -->
+          <div class="quiz-step" data-step="2">
+            <h2 class="quiz-q">What type of property is it?</h2>
+            <p class="quiz-sub">This helps us size up the job.</p>
+            <div class="opts">
+              <button class="opt" data-opt="property" data-val="Detached house">Detached</button>
+              <button class="opt" data-opt="property" data-val="Semi-detached">Semi-detached</button>
+              <button class="opt" data-opt="property" data-val="Terraced">Terraced</button>
+              <button class="opt" data-opt="property" data-val="Bungalow">Bungalow</button>
+              <button class="opt" data-opt="property" data-val="Flat / Apartment">Flat / Apartment</button>
+              <button class="opt" data-opt="property" data-val="Commercial">Commercial</button>
+            </div>
+          </div>
+
+          <!-- Step 3: urgency -->
+          <div class="quiz-step" data-step="3">
+            <h2 class="quiz-q">How soon do you need it done?</h2>
+            <p class="quiz-sub">No pressure either way.</p>
+            <div class="opts opts-col">
+              <button class="opt" data-opt="urgency" data-val="As soon as possible (urgent)">As soon as possible &mdash; it's urgent</button>
+              <button class="opt" data-opt="urgency" data-val="In the next few weeks">In the next few weeks</button>
+              <button class="opt" data-opt="urgency" data-val="Just getting prices for now">Just getting prices for now</button>
+            </div>
+          </div>
+
+          <!-- Step 4: contact preference -->
+          <div class="quiz-step" data-step="4">
+            <h2 class="quiz-q">Last step &mdash; how should we reply?</h2>
+            <p class="quiz-sub">Add your first name (optional), then choose how you'd like your free quote.</p>
+            <input class="quiz-name" data-quiz-name type="text" placeholder="Your first name" autocomplete="given-name" enterkeyhint="done">
+            <div class="quiz-contact">
+              <a class="qc-btn qc-wa" data-quiz-wa target="_blank" rel="noopener" href="#">
+                <svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.5 8.5 3.5 15.5c0 2.4.7 4.7 1.9 6.7L3 29l7-1.8c1.9 1 4 1.6 6 1.6 7 0 12.5-5.5 12.5-12.5S23 3 16 3zm0 22.8c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.1 1.1 1.1-4-.3-.4a10 10 0 0 1-1.6-5.4C5.5 9.7 10.2 5 16 5s10.5 4.7 10.5 10.5S21.8 25.8 16 25.8zm5.8-7.8c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1a8.2 8.2 0 0 1-4-3.5c-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4a3.4 3.4 0 0 0-1 2.5c0 1.5 1.1 2.9 1.2 3.1s2.1 3.3 5.2 4.6c2 .8 2.7.9 3.7.8.6-.1 1.9-.8 2.2-1.5s.3-1.4.2-1.5-.3-.3-.6-.4z"/></svg>
+                WhatsApp my quote</a>
+              <a class="qc-btn qc-sms" data-quiz-sms href="#">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v4l5-4h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                Text my quote</a>
+            </div>
+            <p class="quiz-summary" data-quiz-summary></p>
+          </div>
         </div>
         <p class="qc-foot">Or call us free on <b data-tel-text>—</b></p>
       </div>
@@ -416,7 +498,8 @@
           <svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.5 8.5 3.5 15.5c0 2.4.7 4.7 1.9 6.7L3 29l7-1.8c1.9 1 4 1.6 6 1.6 7 0 12.5-5.5 12.5-12.5S23 3 16 3zm0 22.8c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.1 1.1 1.1-4-.3-.4a10 10 0 0 1-1.6-5.4C5.5 9.7 10.2 5 16 5s10.5 4.7 10.5 10.5S21.8 25.8 16 25.8zm5.8-7.8c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-.9 1.2-.3.2-.6.1a8.2 8.2 0 0 1-4-3.5c-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5l-1-2.3c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4a3.4 3.4 0 0 0-1 2.5c0 1.5 1.1 2.9 1.2 3.1s2.1 3.3 5.2 4.6c2 .8 2.7.9 3.7.8.6-.1 1.9-.8 2.2-1.5s.3-1.4.2-1.5-.3-.3-.6-.4z"/></svg>
           Message Us on WhatsApp
         </button>
-        <a class="btn" data-tel href="#"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.5-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>Call <span data-tel-text>—</span></a>
+        <a class="btn sms" data-sms="Free Quote (final CTA)" href="#"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v4l5-4h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Text Us</a>
+        <a class="btn ghost" data-tel href="#"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.5-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .7-.2 1l-2.3 2.2z"/></svg>Call <span data-tel-text>—</span></a>
       </div>
     </div>
   </div>
@@ -496,6 +579,11 @@
     var msg = "Hi " + CONFIG.business + ", I'd like a free quote for: " + job;
     return "https://wa.me/" + CONFIG.waNumber + "?text=" + encodeURIComponent(msg);
   }
+  function smsLink(job){
+    var msg = "Hi " + CONFIG.business + ", I'd like a free quote for: " + job;
+    // "?&body=" is the cross-platform form that works on both iOS and Android
+    return "sms:" + CONFIG.telDial + "?&body=" + encodeURIComponent(msg);
+  }
 
   document.addEventListener("DOMContentLoaded", function(){
     // Hydrate images
@@ -555,6 +643,57 @@
       if(el.tagName === "A"){ el.setAttribute("href", waLink(job)); el.setAttribute("target","_blank"); el.setAttribute("rel","noopener"); }
       else { el.addEventListener("click", function(){ window.open(waLink(job), "_blank", "noopener"); }); }
     });
+    // Any element with data-sms opens the SMS app with the message pre-filled
+    document.querySelectorAll("[data-sms]").forEach(function(el){
+      el.setAttribute("href", smsLink(el.getAttribute("data-sms")));
+    });
+
+    // ---- Multi-step quote funnel ----
+    (function(){
+      var quiz = document.querySelector("[data-quiz]"); if(!quiz) return;
+      var steps = Array.prototype.slice.call(quiz.querySelectorAll(".quiz-step"));
+      var total = steps.length;
+      var fill = quiz.querySelector("[data-quiz-fill]");
+      var count = quiz.querySelector("[data-quiz-count]");
+      var backBtn = quiz.querySelector("[data-quiz-back]");
+      var nameInput = quiz.querySelector("[data-quiz-name]");
+      var waBtn = quiz.querySelector("[data-quiz-wa]");
+      var smsBtn = quiz.querySelector("[data-quiz-sms]");
+      var summaryEl = quiz.querySelector("[data-quiz-summary]");
+      var answers = {}, idx = 0;
+
+      function show(i){
+        idx = Math.max(0, Math.min(total - 1, i));
+        steps.forEach(function(s,k){ s.classList.toggle("is-active", k === idx); });
+        if(fill)  fill.style.width = Math.round((idx + 1) / total * 100) + "%";
+        if(count) count.textContent = "Step " + (idx + 1) + " of " + total;
+        if(backBtn) backBtn.hidden = (idx === 0);
+        if(idx === total - 1) buildContact();
+      }
+      function buildSummary(){
+        var lines = ["Hi " + CONFIG.business + ", I'd like a free roofing quote."];
+        if(answers.job)      lines.push("• Work needed: " + answers.job);
+        if(answers.property) lines.push("• Property: " + answers.property);
+        if(answers.urgency)  lines.push("• Timeframe: " + answers.urgency);
+        var nm = nameInput && nameInput.value ? nameInput.value.trim() : "";
+        if(nm) lines.push("• Name: " + nm);
+        return lines.join("\n");
+      }
+      function buildContact(){
+        var msg = buildSummary(), enc = encodeURIComponent(msg);
+        if(waBtn)  waBtn.setAttribute("href", "https://wa.me/" + CONFIG.waNumber + "?text=" + enc);
+        if(smsBtn) smsBtn.setAttribute("href", "sms:" + CONFIG.telDial + "?&body=" + enc);
+        if(summaryEl){ summaryEl.textContent = msg; summaryEl.style.display = "block"; }
+      }
+      quiz.addEventListener("click", function(e){
+        var opt = e.target.closest("[data-opt]"); if(!opt || !quiz.contains(opt)) return;
+        answers[opt.getAttribute("data-opt")] = opt.getAttribute("data-val");
+        show(idx + 1);
+      });
+      if(backBtn)   backBtn.addEventListener("click", function(){ show(idx - 1); });
+      if(nameInput) nameInput.addEventListener("input", buildContact);
+      show(0);
+    })();
 
     // Reviews carousel — centre mode, infinite loop, no clones
     (function(){
