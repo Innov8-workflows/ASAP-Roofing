@@ -3,6 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google tag (gtag.js) + Consent Mode v2 (GDPR) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6VZLVBXS2T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // Default everything to denied until the visitor accepts (cookie banner below)
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    wait_for_update: 500
+  });
+  gtag('config', 'G-6VZLVBXS2T');
+</script>
 <title>ASAP Roofing — Local Roofing Specialists in Liverpool</title>
 <meta name="description" content="ASAP Roofing — your local Liverpool roofing company. New roofs, repairs, flat roofing, fascias, soffits & gutters. Free quotes, 10 year guarantee, family run.">
 <meta property="og:title" content="ASAP Roofing — Roofer in Liverpool">
@@ -368,6 +384,19 @@
   .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
 
+  /* Cookie consent banner */
+  .cookie{position:fixed;left:16px;bottom:16px;z-index:70;max-width:360px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 50px rgba(15,36,85,.22);padding:18px 18px 16px;font-size:.86rem;line-height:1.5;color:var(--ink)}
+  .cookie[hidden]{display:none}
+  .cookie p{margin:0 0 12px}
+  .cookie a{color:var(--blue);font-weight:700}
+  .cookie-btns{display:flex;gap:10px;justify-content:flex-end}
+  .ck-btn{appearance:none;border:0;cursor:pointer;font-family:'Montserrat';font-weight:700;font-size:.85rem;padding:9px 18px;border-radius:999px;transition:transform .12s ease,filter .12s ease}
+  .ck-ghost{background:#fff;border:1.5px solid var(--line);color:var(--grey)}
+  .ck-ghost:hover{border-color:var(--grey)}
+  .ck-accept{background:var(--grad-blue-soft);color:#fff;box-shadow:0 8px 18px rgba(29,78,216,.3)}
+  .ck-accept:hover{filter:brightness(1.07);transform:translateY(-1px)}
+  @media(max-width:759px){.cookie{left:12px;right:12px;bottom:60px;max-width:none}}
+
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -659,6 +688,15 @@
   <a class="wha" data-job="Free Quote (mobile bar)" href="#"><svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.5 8.5 3.5 15.5c0 2.4.7 4.7 1.9 6.7L3 29l7-1.8c1.9 1 4 1.6 6 1.6 7 0 12.5-5.5 12.5-12.5S23 3 16 3z"/></svg>WhatsApp</a>
 </div>
 
+<!-- Cookie consent -->
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookie consent" hidden>
+  <p>We use cookies to measure how this page performs. See our <a href="privacy.html">Privacy Policy</a>.</p>
+  <div class="cookie-btns">
+    <button type="button" id="ckDecline" class="ck-btn ck-ghost">Decline</button>
+    <button type="button" id="ckAccept" class="ck-btn ck-accept">Accept</button>
+  </div>
+</div>
+
 <script>
   /* ============================================================
      CONFIG — change these in one place
@@ -694,6 +732,8 @@
     // "?&body=" is the cross-platform form that works on both iOS and Android
     return "sms:" + CONFIG.telDial + "?&body=" + encodeURIComponent(msg);
   }
+  // Fire a GA4 event (safe no-op if gtag hasn't loaded / consent pending)
+  function track(name, params){ if(typeof window.gtag === "function"){ try{ window.gtag("event", name, params || {}); }catch(e){} } }
 
   document.addEventListener("DOMContentLoaded", function(){
     // Hydrate images
@@ -739,7 +779,7 @@
     })();
 
     // Phone / email / text
-    document.querySelectorAll("[data-tel]").forEach(function(a){ a.setAttribute("href","tel:"+CONFIG.telDial); });
+    document.querySelectorAll("[data-tel]").forEach(function(a){ a.setAttribute("href","tel:"+CONFIG.telDial); a.addEventListener("click", function(){ track("generate_lead", {method:"phone"}); }); });
     document.querySelectorAll("[data-tel-text]").forEach(function(s){ s.textContent = CONFIG.telDisplay; });
     document.querySelectorAll("[data-email]").forEach(function(a){ a.setAttribute("href","mailto:"+CONFIG.email); });
     document.querySelectorAll("[data-email-text]").forEach(function(s){ s.textContent = CONFIG.email; });
@@ -752,11 +792,32 @@
       var job = el.getAttribute("data-job");
       if(el.tagName === "A"){ el.setAttribute("href", waLink(job)); el.setAttribute("target","_blank"); el.setAttribute("rel","noopener"); }
       else { el.addEventListener("click", function(){ window.open(waLink(job), "_blank", "noopener"); }); }
+      el.addEventListener("click", function(){ track("generate_lead", {method:"whatsapp", cta:job}); });
     });
     // Any element with data-sms opens the SMS app with the message pre-filled
     document.querySelectorAll("[data-sms]").forEach(function(el){
       el.setAttribute("href", smsLink(el.getAttribute("data-sms")));
+      el.addEventListener("click", function(){ track("generate_lead", {method:"sms", cta:el.getAttribute("data-sms")}); });
     });
+
+    // ---- Cookie consent (drives GA4 Consent Mode v2) ----
+    (function(){
+      var bar = document.getElementById("cookie"); if(!bar) return;
+      var KEY = "asap_consent";
+      function apply(v){
+        if(typeof window.gtag === "function"){
+          window.gtag("consent","update",{ ad_storage:v, ad_user_data:v, ad_personalization:v, analytics_storage:v });
+        }
+      }
+      var saved = null; try{ saved = localStorage.getItem(KEY); }catch(e){}
+      if(saved === "granted"){ apply("granted"); return; }
+      if(saved === "denied"){ return; }
+      bar.hidden = false;
+      function choose(v){ try{ localStorage.setItem(KEY, v); }catch(e){} apply(v); bar.hidden = true; }
+      var a = document.getElementById("ckAccept"), d = document.getElementById("ckDecline");
+      if(a) a.addEventListener("click", function(){ choose("granted"); });
+      if(d) d.addEventListener("click", function(){ choose("denied"); });
+    })();
 
     // ---- Multi-step quote funnel ----
     (function(){
@@ -770,7 +831,7 @@
       var waBtn = quiz.querySelector("[data-quiz-wa]");
       var smsBtn = quiz.querySelector("[data-quiz-sms]");
       var summaryEl = quiz.querySelector("[data-quiz-summary]");
-      var answers = {}, idx = 0;
+      var answers = {}, idx = 0, started = false, reached = false;
 
       function show(i){
         idx = Math.max(0, Math.min(total - 1, i));
@@ -778,7 +839,7 @@
         if(fill)  fill.style.width = Math.round((idx + 1) / total * 100) + "%";
         if(count) count.textContent = "Step " + (idx + 1) + " of " + total;
         if(backBtn) backBtn.hidden = (idx === 0);
-        if(idx === total - 1) buildContact();
+        if(idx === total - 1){ buildContact(); if(!reached){ reached = true; track("funnel_reached_contact"); } }
       }
       function buildSummary(){
         var lines = ["Hi " + CONFIG.business + ", I'd like a free roofing quote."];
@@ -797,11 +858,14 @@
       }
       quiz.addEventListener("click", function(e){
         var opt = e.target.closest("[data-opt]"); if(!opt || !quiz.contains(opt)) return;
+        if(!started){ started = true; track("funnel_start"); }
         answers[opt.getAttribute("data-opt")] = opt.getAttribute("data-val");
         show(idx + 1);
       });
       if(backBtn)   backBtn.addEventListener("click", function(){ show(idx - 1); });
       if(nameInput) nameInput.addEventListener("input", buildContact);
+      if(waBtn)  waBtn.addEventListener("click", function(){ track("generate_lead", {method:"whatsapp", source:"funnel"}); });
+      if(smsBtn) smsBtn.addEventListener("click", function(){ track("generate_lead", {method:"sms", source:"funnel"}); });
       show(0);
     })();
 
