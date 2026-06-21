@@ -768,7 +768,8 @@
     landline:   "03301 332224",
     email:      "asap.roofing00@gmail.com",
     ownerName:  "Rob Ashton",             // <-- CONFIRM (pulled from your reference page)
-    business:   "ASAP Roofing"
+    business:   "ASAP Roofing",
+    source:     "asaproofingnorthwest.co.uk"  // landing page — tags where the lead came from
   };
 
   var IMAGES = {
@@ -784,14 +785,16 @@
   };
 
   function waLink(job){
-    var msg = "Hi " + CONFIG.business + ", I'd like a free quote for: " + job;
+    var msg = "Hi " + CONFIG.business + ", I'd like a free roofing quote." + sourceTag();
     return "https://wa.me/" + CONFIG.waNumber + "?text=" + encodeURIComponent(msg);
   }
   function smsLink(job){
-    var msg = "Hi " + CONFIG.business + ", I'd like a free quote for: " + job;
+    var msg = "Hi " + CONFIG.business + ", I'd like a free roofing quote." + sourceTag();
     // "?&body=" is the cross-platform form that works on both iOS and Android
     return "sms:" + CONFIG.telDial + "?&body=" + encodeURIComponent(msg);
   }
+  // Line appended to every enquiry so ASAP can see it came from this landing page
+  function sourceTag(){ return "\n\n— Sent from your website (" + CONFIG.source + ")"; }
   // Fire a GA4 event (safe no-op if gtag hasn't loaded / consent pending)
   function track(name, params){ if(typeof window.gtag === "function"){ try{ window.gtag("event", name, params || {}); }catch(e){} } }
 
@@ -908,7 +911,7 @@
         if(answers.urgency)  lines.push("• Timeframe: " + answers.urgency);
         var nm = nameInput && nameInput.value ? nameInput.value.trim() : "";
         if(nm) lines.push("• Name: " + nm);
-        return lines.join("\n");
+        return lines.join("\n") + sourceTag();
       }
       function buildContact(){
         var msg = buildSummary(), enc = encodeURIComponent(msg);
